@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
-import { useTradeStore } from '@/lib/trade-store';
+import { useTrades } from '@/hooks/useTrades';
 import { Trade } from '@/lib/mock-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowUpRight, ArrowDownRight, ChevronRight, Filter } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function TradeList() {
-  const { trades } = useTradeStore();
+  const { data: trades = [], isLoading } = useTrades();
   const [filterPair, setFilterPair] = useState('all');
   const [filterResult, setFilterResult] = useState('all');
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
@@ -21,6 +21,8 @@ export default function TradeList() {
 
   const uniquePairs = [...new Set(trades.map(t => t.pair))];
 
+  if (isLoading) return <div className="px-4 pt-6"><p className="text-muted-foreground">Loading...</p></div>;
+
   return (
     <div className="px-4 pt-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -28,10 +30,7 @@ export default function TradeList() {
           <h1 className="text-xl font-bold text-foreground">Trades</h1>
           <p className="text-sm text-muted-foreground">{filtered.length} trades</p>
         </div>
-        <button
-          className="flex items-center gap-1 text-sm text-primary"
-          onClick={() => setShowFilters(!showFilters)}
-        >
+        <button className="flex items-center gap-1 text-sm text-primary" onClick={() => setShowFilters(!showFilters)}>
           <Filter className="h-4 w-4" /> Filter
         </button>
       </div>
@@ -56,43 +55,36 @@ export default function TradeList() {
         </div>
       )}
 
-      <div className="space-y-2">
-        {filtered.map(trade => (
-          <button
-            key={trade.id}
-            className="glass-card p-4 w-full text-left flex items-center gap-3 animate-fade-in"
-            onClick={() => setSelectedTrade(trade)}
-          >
-            <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${trade.direction === 'buy' ? 'bg-success/15' : 'bg-loss/15'}`}>
-              {trade.direction === 'buy'
-                ? <ArrowUpRight className="h-5 w-5 text-success" />
-                : <ArrowDownRight className="h-5 w-5 text-loss" />}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground">{trade.pair}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  trade.result === 'win' ? 'bg-success/15 text-success' : 'bg-loss/15 text-loss'
-                }`}>{trade.result.toUpperCase()}</span>
+      {filtered.length === 0 ? (
+        <div className="glass-card p-8 text-center">
+          <p className="text-muted-foreground">No trades yet. Start journaling!</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {filtered.map(trade => (
+            <button key={trade.id} className="glass-card p-4 w-full text-left flex items-center gap-3 animate-fade-in" onClick={() => setSelectedTrade(trade)}>
+              <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${trade.direction === 'buy' ? 'bg-success/15' : 'bg-loss/15'}`}>
+                {trade.direction === 'buy' ? <ArrowUpRight className="h-5 w-5 text-success" /> : <ArrowDownRight className="h-5 w-5 text-loss" />}
               </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                <span>{trade.timeframe}</span>
-                <span>·</span>
-                <span>{new Date(trade.createdAt).toLocaleDateString()}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-foreground">{trade.pair}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${trade.result === 'win' ? 'bg-success/15 text-success' : 'bg-loss/15 text-loss'}`}>{trade.result.toUpperCase()}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                  <span>{trade.timeframe}</span><span>·</span><span>{new Date(trade.createdAt).toLocaleDateString()}</span>
+                </div>
               </div>
-            </div>
-            <div className="text-right">
-              <p className={`font-semibold ${trade.profitLossAmount >= 0 ? 'text-success' : 'text-loss'}`}>
-                {trade.profitLossAmount >= 0 ? '+' : ''}${trade.profitLossAmount}
-              </p>
-              <p className="text-xs text-muted-foreground">{trade.rrRatio}:1 R:R</p>
-            </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </button>
-        ))}
-      </div>
+              <div className="text-right">
+                <p className={`font-semibold ${trade.profitLossAmount >= 0 ? 'text-success' : 'text-loss'}`}>{trade.profitLossAmount >= 0 ? '+' : ''}${trade.profitLossAmount}</p>
+                <p className="text-xs text-muted-foreground">{trade.rrRatio}:1 R:R</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </button>
+          ))}
+        </div>
+      )}
 
-      {/* Trade Detail Dialog */}
       <Dialog open={!!selectedTrade} onOpenChange={() => setSelectedTrade(null)}>
         <DialogContent className="bg-card border-border max-h-[85vh] overflow-y-auto">
           {selectedTrade && (
@@ -100,30 +92,15 @@ export default function TradeList() {
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-foreground">
                   {selectedTrade.pair}
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    selectedTrade.result === 'win' ? 'bg-success/15 text-success' : 'bg-loss/15 text-loss'
-                  }`}>{selectedTrade.result.toUpperCase()}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${selectedTrade.result === 'win' ? 'bg-success/15 text-success' : 'bg-loss/15 text-loss'}`}>{selectedTrade.result.toUpperCase()}</span>
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 text-sm">
                 <div className="grid grid-cols-2 gap-3">
-                  {[
-                    ['Direction', selectedTrade.direction.toUpperCase()],
-                    ['Entry', selectedTrade.entryPrice],
-                    ['Stop Loss', selectedTrade.stopLoss],
-                    ['Take Profit', selectedTrade.takeProfit],
-                    ['Lot Size', selectedTrade.lotSize],
-                    ['Risk %', `${selectedTrade.riskPercent}%`],
-                    ['R:R', `${selectedTrade.rrRatio}:1`],
-                    ['P/L', `$${selectedTrade.profitLossAmount}`],
-                  ].map(([label, val]) => (
-                    <div key={label as string}>
-                      <span className="text-muted-foreground text-xs">{label}</span>
-                      <p className="font-medium text-foreground">{val}</p>
-                    </div>
+                  {[['Direction', selectedTrade.direction.toUpperCase()], ['Entry', selectedTrade.entryPrice], ['Stop Loss', selectedTrade.stopLoss], ['Take Profit', selectedTrade.takeProfit], ['Lot Size', selectedTrade.lotSize], ['Risk %', `${selectedTrade.riskPercent}%`], ['R:R', `${selectedTrade.rrRatio}:1`], ['P/L', `$${selectedTrade.profitLossAmount}`]].map(([label, val]) => (
+                    <div key={label as string}><span className="text-muted-foreground text-xs">{label}</span><p className="font-medium text-foreground">{val}</p></div>
                   ))}
                 </div>
-
                 <div className="border-t border-border pt-3">
                   <h3 className="text-primary font-semibold text-xs uppercase tracking-wider mb-2">SMC Logic</h3>
                   <div className="grid grid-cols-2 gap-2 text-xs">
@@ -134,7 +111,6 @@ export default function TradeList() {
                     <div>Order Block: <span className={selectedTrade.orderBlock ? 'text-success' : 'text-loss'}>{selectedTrade.orderBlock ? 'Yes' : 'No'}</span></div>
                   </div>
                 </div>
-
                 <div className="border-t border-border pt-3">
                   <h3 className="text-primary font-semibold text-xs uppercase tracking-wider mb-2">Psychology</h3>
                   <div className="grid grid-cols-2 gap-2 text-xs">
@@ -143,7 +119,6 @@ export default function TradeList() {
                     <div>After: <span className="text-foreground">{selectedTrade.emotionAfter}</span></div>
                   </div>
                 </div>
-
                 {selectedTrade.notes && (
                   <div className="border-t border-border pt-3">
                     <h3 className="text-primary font-semibold text-xs uppercase tracking-wider mb-1">Notes</h3>

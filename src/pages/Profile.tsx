@@ -1,45 +1,48 @@
-import { useTradeStore } from '@/lib/trade-store';
+import { useTrades } from '@/hooks/useTrades';
+import { useAuth } from '@/hooks/useAuth';
 import { User, Crown, LogOut, Shield, Bell, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
-  const { trades } = useTradeStore();
+  const { data: trades = [] } = useTrades();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
   const tradesThisMonth = trades.filter(t => {
     const d = new Date(t.createdAt);
     const now = new Date();
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
   return (
     <div className="px-4 pt-6 space-y-5">
       <h1 className="text-xl font-bold text-foreground">Profile</h1>
 
-      {/* User Info */}
       <div className="glass-card p-5 flex items-center gap-4 animate-fade-in">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/15">
           <User className="h-7 w-7 text-primary" />
         </div>
         <div>
           <h2 className="font-semibold text-foreground text-lg">Trader</h2>
-          <p className="text-sm text-muted-foreground">Free Plan</p>
+          <p className="text-sm text-muted-foreground">{user?.email}</p>
         </div>
       </div>
 
-      {/* Subscription */}
       <div className="glass-card p-4 animate-fade-in">
         <div className="flex items-center gap-2 mb-3">
           <Crown className="h-5 w-5 text-chart-4" />
           <h3 className="font-semibold text-foreground">Upgrade to Pro</h3>
         </div>
-        <p className="text-sm text-muted-foreground mb-1">
-          {tradesThisMonth}/20 trades used this month
-        </p>
+        <p className="text-sm text-muted-foreground mb-1">{tradesThisMonth}/20 trades used this month</p>
         <div className="w-full bg-secondary rounded-full h-2 mb-3">
-          <div
-            className="bg-primary h-2 rounded-full transition-all"
-            style={{ width: `${Math.min((tradesThisMonth / 20) * 100, 100)}%` }}
-          />
+          <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${Math.min((tradesThisMonth / 20) * 100, 100)}%` }} />
         </div>
         <ul className="text-xs text-muted-foreground space-y-1 mb-4">
           <li>• Unlimited trades</li>
@@ -47,18 +50,15 @@ export default function Profile() {
           <li>• Unlimited screenshot storage</li>
           <li>• Full insights dashboard</li>
         </ul>
-        <Button className="w-full bg-primary text-primary-foreground" onClick={() => toast.info('Subscription coming soon!')}>
-          Upgrade — $9/month
-        </Button>
+        <Button className="w-full bg-primary text-primary-foreground" onClick={() => toast.info('Subscription coming soon!')}>Upgrade — $9/month</Button>
       </div>
 
-      {/* Settings */}
       <div className="glass-card divide-y divide-border animate-fade-in">
         {[
           { icon: Bell, label: 'Notifications', action: () => toast.info('Coming soon') },
           { icon: Shield, label: 'Privacy & Security', action: () => toast.info('Coming soon') },
           { icon: HelpCircle, label: 'Help & Support', action: () => toast.info('Coming soon') },
-          { icon: LogOut, label: 'Log Out', action: () => toast.info('Auth coming soon') },
+          { icon: LogOut, label: 'Log Out', action: handleSignOut },
         ].map(({ icon: Icon, label, action }) => (
           <button key={label} className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={action}>
             <Icon className="h-5 w-5 text-muted-foreground" />
