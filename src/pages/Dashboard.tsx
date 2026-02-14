@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { useTradeStore } from '@/lib/trade-store';
+import { useTrades } from '@/hooks/useTrades';
 import StatCard from '@/components/StatCard';
 import { TrendingUp, TrendingDown, Target, BarChart3, Trophy, AlertTriangle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 
 export default function Dashboard() {
-  const { trades } = useTradeStore();
+  const { data: trades = [], isLoading } = useTrades();
 
   const stats = useMemo(() => {
     const closedTrades = trades.filter(t => t.result === 'win' || t.result === 'loss');
@@ -17,14 +17,11 @@ export default function Dashboard() {
       : 0;
 
     const pairPL: Record<string, number> = {};
-    closedTrades.forEach(t => {
-      pairPL[t.pair] = (pairPL[t.pair] || 0) + t.profitLossAmount;
-    });
+    closedTrades.forEach(t => { pairPL[t.pair] = (pairPL[t.pair] || 0) + t.profitLossAmount; });
     const sortedPairs = Object.entries(pairPL).sort((a, b) => b[1] - a[1]);
     const bestPair = sortedPairs[0]?.[0] || '—';
     const worstPair = sortedPairs[sortedPairs.length - 1]?.[0] || '—';
 
-    // Equity curve
     let running = 0;
     const equityCurve = closedTrades
       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
@@ -33,17 +30,7 @@ export default function Dashboard() {
         return { trade: i + 1, equity: running, date: new Date(t.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) };
       });
 
-    return {
-      total: closedTrades.length,
-      winRate: closedTrades.length > 0 ? Math.round((wins.length / closedTrades.length) * 100) : 0,
-      totalPL,
-      avgRR: avgRR.toFixed(1),
-      bestPair,
-      worstPair,
-      wins: wins.length,
-      losses: losses.length,
-      equityCurve,
-    };
+    return { total: closedTrades.length, winRate: closedTrades.length > 0 ? Math.round((wins.length / closedTrades.length) * 100) : 0, totalPL, avgRR: avgRR.toFixed(1), bestPair, worstPair, wins: wins.length, losses: losses.length, equityCurve };
   }, [trades]);
 
   const pieData = [
@@ -51,6 +38,8 @@ export default function Dashboard() {
     { name: 'Losses', value: stats.losses },
   ];
   const PIE_COLORS = ['hsl(152, 60%, 48%)', 'hsl(0, 72%, 55%)'];
+
+  if (isLoading) return <div className="px-4 pt-6"><p className="text-muted-foreground">Loading...</p></div>;
 
   return (
     <div className="px-4 pt-6 space-y-5">
@@ -106,9 +95,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={pieData} cx="50%" cy="50%" innerRadius={30} outerRadius={55} paddingAngle={4} dataKey="value">
-                  {pieData.map((_, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i]} />
-                  ))}
+                  {pieData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i]} />)}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>

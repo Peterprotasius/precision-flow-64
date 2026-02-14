@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTradeStore } from '@/lib/trade-store';
-import { EMOTIONS, PAIRS, TIMEFRAMES, Trade } from '@/lib/mock-data';
+import { useAddTrade } from '@/hooks/useTrades';
+import { EMOTIONS, PAIRS, TIMEFRAMES } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +14,7 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function AddTrade() {
   const navigate = useNavigate();
-  const addTrade = useTradeStore((s) => s.addTrade);
+  const addTrade = useAddTrade();
 
   const [pair, setPair] = useState('');
   const [direction, setDirection] = useState<'buy' | 'sell'>('buy');
@@ -51,8 +51,7 @@ export default function AddTrade() {
       return;
     }
 
-    const trade: Trade = {
-      id: Date.now().toString(),
+    addTrade.mutate({
       pair,
       direction,
       entryPrice: parseFloat(entryPrice),
@@ -63,7 +62,7 @@ export default function AddTrade() {
       rrRatio: parseFloat(calcRR()) || 0,
       result,
       profitLossAmount: parseFloat(profitLoss) || 0,
-      timeframe: timeframe as Trade['timeframe'],
+      timeframe: timeframe as any,
       htfBias,
       bosPresent,
       liquiditySweep,
@@ -72,86 +71,61 @@ export default function AddTrade() {
       emotionBefore,
       emotionAfter,
       notes,
-      createdAt: new Date().toISOString(),
-    };
-
-    addTrade(trade);
-    toast.success('Trade saved!');
-    navigate('/trades');
+    }, {
+      onSuccess: () => {
+        toast.success('Trade saved!');
+        navigate('/trades');
+      },
+      onError: (err) => toast.error(err.message),
+    });
   };
 
   return (
     <div className="px-4 pt-6 pb-4 space-y-5">
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="text-muted-foreground">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
+        <button onClick={() => navigate(-1)} className="text-muted-foreground"><ArrowLeft className="h-5 w-5" /></button>
         <h1 className="text-xl font-bold text-foreground">Add Trade</h1>
       </div>
 
       {/* Basic Info */}
       <section className="glass-card p-4 space-y-4 animate-fade-in">
         <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Basic Information</h2>
-
         <div>
           <Label>Pair</Label>
           <Select value={pair} onValueChange={setPair}>
             <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Select pair" /></SelectTrigger>
-            <SelectContent>
-              {PAIRS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
-            </SelectContent>
+            <SelectContent>{PAIRS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-
         <div>
           <Label>Direction</Label>
           <div className="flex gap-2 mt-1">
-            <Button
-              variant={direction === 'buy' ? 'default' : 'outline'}
-              className={direction === 'buy' ? 'bg-success text-success-foreground flex-1' : 'flex-1'}
-              onClick={() => setDirection('buy')}
-            >Buy</Button>
-            <Button
-              variant={direction === 'sell' ? 'default' : 'outline'}
-              className={direction === 'sell' ? 'bg-loss text-loss-foreground flex-1' : 'flex-1'}
-              onClick={() => setDirection('sell')}
-            >Sell</Button>
+            <Button variant={direction === 'buy' ? 'default' : 'outline'} className={direction === 'buy' ? 'bg-success text-success-foreground flex-1' : 'flex-1'} onClick={() => setDirection('buy')}>Buy</Button>
+            <Button variant={direction === 'sell' ? 'default' : 'outline'} className={direction === 'sell' ? 'bg-loss text-loss-foreground flex-1' : 'flex-1'} onClick={() => setDirection('sell')}>Sell</Button>
           </div>
         </div>
-
         <div className="grid grid-cols-2 gap-3">
           <div><Label>Entry Price</Label><Input className="bg-secondary border-border" type="number" value={entryPrice} onChange={e => setEntryPrice(e.target.value)} /></div>
           <div><Label>Stop Loss</Label><Input className="bg-secondary border-border" type="number" value={stopLoss} onChange={e => setStopLoss(e.target.value)} /></div>
           <div><Label>Take Profit</Label><Input className="bg-secondary border-border" type="number" value={takeProfit} onChange={e => setTakeProfit(e.target.value)} /></div>
           <div><Label>Lot Size</Label><Input className="bg-secondary border-border" type="number" value={lotSize} onChange={e => setLotSize(e.target.value)} /></div>
           <div><Label>Risk %</Label><Input className="bg-secondary border-border" type="number" value={riskPercent} onChange={e => setRiskPercent(e.target.value)} /></div>
-          <div>
-            <Label>R:R Ratio</Label>
-            <div className="h-10 flex items-center px-3 bg-secondary border border-border rounded-md text-sm text-primary font-semibold">{calcRR()}:1</div>
-          </div>
+          <div><Label>R:R Ratio</Label><div className="h-10 flex items-center px-3 bg-secondary border border-border rounded-md text-sm text-primary font-semibold">{calcRR()}:1</div></div>
         </div>
-
         <div>
           <Label>Result</Label>
           <div className="flex gap-2 mt-1">
             {(['win', 'loss', 'breakeven'] as const).map(r => (
-              <Button
-                key={r}
-                variant={result === r ? 'default' : 'outline'}
-                className={`flex-1 capitalize ${result === r && r === 'win' ? 'bg-success text-success-foreground' : result === r && r === 'loss' ? 'bg-loss text-loss-foreground' : ''}`}
-                onClick={() => setResult(r)}
-              >{r}</Button>
+              <Button key={r} variant={result === r ? 'default' : 'outline'} className={`flex-1 capitalize ${result === r && r === 'win' ? 'bg-success text-success-foreground' : result === r && r === 'loss' ? 'bg-loss text-loss-foreground' : ''}`} onClick={() => setResult(r)}>{r}</Button>
             ))}
           </div>
         </div>
-
         <div><Label>Profit / Loss ($)</Label><Input className="bg-secondary border-border" type="number" value={profitLoss} onChange={e => setProfitLoss(e.target.value)} /></div>
       </section>
 
       {/* SMC Logic */}
       <section className="glass-card p-4 space-y-4 animate-fade-in">
         <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">SMC Logic</h2>
-
         <div>
           <Label>Higher Timeframe Bias</Label>
           <div className="flex gap-2 mt-1">
@@ -159,17 +133,13 @@ export default function AddTrade() {
             <Button variant={htfBias === 'bearish' ? 'default' : 'outline'} className={`flex-1 ${htfBias === 'bearish' ? 'bg-loss text-loss-foreground' : ''}`} onClick={() => setHtfBias('bearish')}>Bearish</Button>
           </div>
         </div>
-
         <div>
           <Label>Entry Timeframe</Label>
           <Select value={timeframe} onValueChange={setTimeframe}>
             <SelectTrigger className="bg-secondary border-border"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {TIMEFRAMES.map(tf => <SelectItem key={tf} value={tf}>{tf}</SelectItem>)}
-            </SelectContent>
+            <SelectContent>{TIMEFRAMES.map(tf => <SelectItem key={tf} value={tf}>{tf}</SelectItem>)}</SelectContent>
           </Select>
         </div>
-
         <div className="space-y-3">
           {[
             { label: 'Break of Structure (BOS)', value: bosPresent, set: setBosPresent },
@@ -187,12 +157,10 @@ export default function AddTrade() {
       {/* Psychology */}
       <section className="glass-card p-4 space-y-4 animate-fade-in">
         <h2 className="text-sm font-semibold text-primary uppercase tracking-wider">Psychology</h2>
-
         <div>
           <Label>Confidence Level: {confidence[0]}/10</Label>
           <Slider value={confidence} onValueChange={setConfidence} min={1} max={10} step={1} className="mt-2" />
         </div>
-
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label>Emotion Before</Label>
@@ -209,7 +177,6 @@ export default function AddTrade() {
             </Select>
           </div>
         </div>
-
         <div>
           <Label>Notes</Label>
           <Textarea className="bg-secondary border-border mt-1" placeholder="Trade notes..." value={notes} onChange={e => setNotes(e.target.value)} rows={3} />
@@ -219,7 +186,9 @@ export default function AddTrade() {
       {/* Actions */}
       <div className="flex gap-3">
         <Button variant="outline" className="flex-1" onClick={() => navigate(-1)}>Cancel</Button>
-        <Button className="flex-1 bg-primary text-primary-foreground" onClick={handleSave}>Save Trade</Button>
+        <Button className="flex-1 bg-primary text-primary-foreground" onClick={handleSave} disabled={addTrade.isPending}>
+          {addTrade.isPending ? 'Saving...' : 'Save Trade'}
+        </Button>
       </div>
     </div>
   );

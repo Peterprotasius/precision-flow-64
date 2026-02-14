@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          subscription_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          subscription_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          subscription_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trades: {
+        Row: {
+          bos_present: boolean
+          confidence_level: number
+          created_at: string
+          direction: string
+          emotion_after: string | null
+          emotion_before: string | null
+          entry_price: number
+          htf_bias: string
+          id: string
+          liquidity_sweep: boolean
+          lot_size: number
+          notes: string | null
+          order_block: boolean
+          pair: string
+          profit_loss_amount: number
+          result: string
+          risk_percent: number
+          rr_ratio: number
+          screenshot_url: string | null
+          stop_loss: number
+          take_profit: number
+          timeframe: string
+          user_id: string
+        }
+        Insert: {
+          bos_present?: boolean
+          confidence_level?: number
+          created_at?: string
+          direction: string
+          emotion_after?: string | null
+          emotion_before?: string | null
+          entry_price: number
+          htf_bias?: string
+          id?: string
+          liquidity_sweep?: boolean
+          lot_size?: number
+          notes?: string | null
+          order_block?: boolean
+          pair: string
+          profit_loss_amount?: number
+          result?: string
+          risk_percent?: number
+          rr_ratio?: number
+          screenshot_url?: string | null
+          stop_loss: number
+          take_profit: number
+          timeframe?: string
+          user_id: string
+        }
+        Update: {
+          bos_present?: boolean
+          confidence_level?: number
+          created_at?: string
+          direction?: string
+          emotion_after?: string | null
+          emotion_before?: string | null
+          entry_price?: number
+          htf_bias?: string
+          id?: string
+          liquidity_sweep?: boolean
+          lot_size?: number
+          notes?: string | null
+          order_block?: boolean
+          pair?: string
+          profit_loss_amount?: number
+          result?: string
+          risk_percent?: number
+          rr_ratio?: number
+          screenshot_url?: string | null
+          stop_loss?: number
+          take_profit?: number
+          timeframe?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
