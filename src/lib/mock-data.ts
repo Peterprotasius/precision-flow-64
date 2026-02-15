@@ -30,7 +30,12 @@ export const EMOTIONS = [
 export const PAIRS = [
   'EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD', 'USD/CAD',
   'EUR/GBP', 'GBP/JPY', 'EUR/JPY', 'NZD/USD', 'USD/CHF',
-  'XAU/USD', 'GBP/AUD', 'EUR/AUD', 'AUD/JPY', 'CAD/JPY'
+  'XAU/USD', 'GBP/AUD', 'EUR/AUD', 'AUD/JPY', 'CAD/JPY',
+  'Volatility 10', 'Volatility 25', 'Volatility 50', 'Volatility 75', 'Volatility 100',
+  'Volatility 10 (1s)', 'Volatility 25 (1s)', 'Volatility 50 (1s)', 'Volatility 75 (1s)', 'Volatility 100 (1s)',
+  'Boom 300', 'Boom 500', 'Boom 1000', 'Crash 300', 'Crash 500', 'Crash 1000',
+  'Step Index', 'Range Break 100', 'Range Break 200',
+  'Jump 10', 'Jump 25', 'Jump 50', 'Jump 75', 'Jump 100',
 ];
 
 export const TIMEFRAMES = ['5m', '15m', '1H', '4H', 'Daily'] as const;
