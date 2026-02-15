@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,11 +9,15 @@ import { toast } from 'sonner';
 import { Eye, EyeOff, TrendingUp } from 'lucide-react';
 
 export default function Auth() {
+  const { user, loading: authLoading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  
+  if (authLoading) return <div className="min-h-screen bg-background flex items-center justify-center"><div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
+  if (user) return <Navigate to="/" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +25,7 @@ export default function Auth() {
       toast.error('Please fill in all fields');
       return;
     }
-    setLoading(true);
+    setSubmitting(true);
 
     if (isLogin) {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -36,7 +42,7 @@ export default function Auth() {
         toast.success('Check your email to verify your account!');
       }
     }
-    setLoading(false);
+    setSubmitting(false);
   };
 
   return (
@@ -95,8 +101,8 @@ export default function Auth() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={loading}>
-            {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
+          <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={submitting}>
+            {submitting ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
           </Button>
         </form>
 
