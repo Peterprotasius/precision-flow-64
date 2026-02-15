@@ -3,6 +3,7 @@ import { useTrades } from '@/hooks/useTrades';
 import StatCard from '@/components/StatCard';
 import { TrendingUp, TrendingDown, Target, BarChart3, Trophy, AlertTriangle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import ProTrialBanner from '@/components/ProTrialBanner';
 
 export default function Dashboard() {
   const { data: trades = [], isLoading } = useTrades();
@@ -47,6 +48,8 @@ export default function Dashboard() {
         <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground">Your trading overview</p>
       </div>
+
+      <ProTrialBanner />
 
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Total Trades" value={stats.total} icon={<BarChart3 className="h-4 w-4" />} />
