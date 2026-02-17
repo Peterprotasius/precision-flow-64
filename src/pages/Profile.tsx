@@ -1,7 +1,7 @@
 import { useTrades } from '@/hooks/useTrades';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile';
-import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail } from 'lucide-react';
+import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState, useRef } from 'react';
+import { registerPushNotifications } from '@/lib/push-notifications';
 
 export default function Profile() {
   const { data: trades = [] } = useTrades();
@@ -217,9 +218,21 @@ export default function Profile() {
 
       {/* Menu items */}
       <div className="glass-card divide-y divide-border animate-fade-in">
-        <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => toast.info('Coming soon')}>
+        <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/notifications')}>
           <Bell className="h-5 w-5 text-muted-foreground" />
-          <span className="text-sm text-foreground">Notifications</span>
+          <span className="text-sm text-foreground flex-1">Notifications</span>
+        </button>
+        <button
+          className="flex items-center gap-3 w-full px-4 py-3.5 text-left"
+          onClick={async () => {
+            if (!user) return;
+            const success = await registerPushNotifications(user.id);
+            if (success) toast.success('Push notifications enabled!');
+            else toast.info('Push notifications not available or denied.');
+          }}
+        >
+          <BellRing className="h-5 w-5 text-muted-foreground" />
+          <span className="text-sm text-foreground">Enable Push Notifications</span>
         </button>
         <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => setPrivacyOpen(true)}>
           <Shield className="h-5 w-5 text-muted-foreground" />

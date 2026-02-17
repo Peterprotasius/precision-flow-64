@@ -1,16 +1,18 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, List, Lightbulb, User } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, List, Lightbulb, User, Bell } from 'lucide-react';
+import { useUnreadCount } from '@/hooks/useNotifications';
 
 const tabs = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/trades', icon: List, label: 'Trades' },
   { path: '/add-trade', icon: PlusCircle, label: 'Add' },
   { path: '/insights', icon: Lightbulb, label: 'Insights' },
-  { path: '/profile', icon: User, label: 'Profile' },
+  { path: '/notifications', icon: Bell, label: 'News' },
 ];
 
 export default function BottomTabs() {
   const location = useLocation();
+  const unreadCount = useUnreadCount();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-md safe-area-bottom">
@@ -18,11 +20,12 @@ export default function BottomTabs() {
         {tabs.map(({ path, icon: Icon, label }) => {
           const isActive = location.pathname === path;
           const isAdd = path === '/add-trade';
+          const isNews = path === '/notifications';
           return (
             <NavLink
               key={path}
               to={path}
-              className="flex flex-col items-center gap-0.5 px-3 py-1 transition-colors"
+              className="flex flex-col items-center gap-0.5 px-3 py-1 transition-colors relative"
             >
               {isAdd ? (
                 <div className={`flex h-11 w-11 items-center justify-center rounded-full ${isActive ? 'bg-primary glow-primary' : 'bg-primary/80'}`}>
@@ -30,7 +33,14 @@ export default function BottomTabs() {
                 </div>
               ) : (
                 <>
-                  <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <div className="relative">
+                    <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                    {isNews && unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1.5 h-4 min-w-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold px-1">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </div>
                   <span className={`text-[10px] font-medium ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
                     {label}
                   </span>

@@ -10,6 +10,7 @@ import AddTrade from "./pages/AddTrade";
 import TradeList from "./pages/TradeList";
 import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
+import Notifications from "./pages/Notifications";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/add-trade" element={<AddTrade />} />
               <Route path="/trades" element={<TradeList />} />
               <Route path="/insights" element={<Insights />} />
+              <Route path="/notifications" element={<Notifications />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
