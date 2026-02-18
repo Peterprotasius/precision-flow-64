@@ -11,6 +11,9 @@ import TradeList from "./pages/TradeList";
 import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
+import Analytics from "./pages/Analytics";
+import Psychology from "./pages/Psychology";
+import AICoach from "./pages/AICoach";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -39,6 +42,9 @@ const App = () => (
               <Route path="/insights" element={<Insights />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/psychology" element={<Psychology />} />
+              <Route path="/coach" element={<AICoach />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

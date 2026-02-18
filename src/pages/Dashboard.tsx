@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTrades } from '@/hooks/useTrades';
 import StatCard from '@/components/StatCard';
 import { TrendingUp, TrendingDown, Target, BarChart3, Trophy, AlertTriangle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
-import ProTrialBanner from '@/components/ProTrialBanner';
+import DashboardHeader from '@/components/DashboardHeader';
+import ProUpgradeModal from '@/components/ProUpgradeModal';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Dashboard() {
   const { data: trades = [], isLoading } = useTrades();
@@ -40,16 +42,35 @@ export default function Dashboard() {
   ];
   const PIE_COLORS = ['hsl(152, 60%, 48%)', 'hsl(0, 72%, 55%)'];
 
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const { subscribed } = useAuth();
+
   if (isLoading) return <div className="px-4 pt-6"><p className="text-muted-foreground">Loading...</p></div>;
 
   return (
     <div className="px-4 pt-6 space-y-5">
-      <div>
-        <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Your trading overview</p>
-      </div>
+      <DashboardHeader />
 
-      <ProTrialBanner />
+      {!subscribed && (
+        <button
+          onClick={() => setUpgradeOpen(true)}
+          className="w-full text-left relative overflow-hidden rounded-xl border border-chart-4/30 bg-gradient-to-r from-chart-4/10 via-chart-5/10 to-primary/10 p-4 animate-fade-in"
+        >
+          <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-chart-4/10 blur-2xl" />
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-chart-4/20">
+              <TrendingUp className="h-5 w-5 text-chart-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-foreground text-sm">Try Pro Analytics Free</h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-chart-4/20 text-chart-4 px-1.5 py-0.5 rounded">Limited Time</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Unlock advanced insights, Edge Score, AI Coach & unlimited trades.</p>
+            </div>
+          </div>
+        </button>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Total Trades" value={stats.total} icon={<BarChart3 className="h-4 w-4" />} />
@@ -115,6 +136,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <ProUpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
     </div>
   );
 }
+
