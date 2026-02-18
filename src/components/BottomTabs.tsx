@@ -1,13 +1,13 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, List, Lightbulb, User, Bell } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, List, BarChart3, Bell, Brain, Bot } from 'lucide-react';
 import { useUnreadCount } from '@/hooks/useNotifications';
 
 const tabs = [
-  { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/', icon: LayoutDashboard, label: 'Home' },
   { path: '/trades', icon: List, label: 'Trades' },
   { path: '/add-trade', icon: PlusCircle, label: 'Add' },
-  { path: '/insights', icon: Lightbulb, label: 'Insights' },
-  { path: '/notifications', icon: Bell, label: 'News' },
+  { path: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { path: '/coach', icon: Bot, label: 'Coach' },
 ];
 
 export default function BottomTabs() {
@@ -20,7 +20,6 @@ export default function BottomTabs() {
         {tabs.map(({ path, icon: Icon, label }) => {
           const isActive = location.pathname === path;
           const isAdd = path === '/add-trade';
-          const isNews = path === '/notifications';
           return (
             <NavLink
               key={path}
@@ -35,11 +34,6 @@ export default function BottomTabs() {
                 <>
                   <div className="relative">
                     <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                    {isNews && unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1.5 h-4 min-w-4 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold px-1">
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                      </span>
-                    )}
                   </div>
                   <span className={`text-[10px] font-medium ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
                     {label}

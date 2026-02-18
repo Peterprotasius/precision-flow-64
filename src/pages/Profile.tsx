@@ -1,7 +1,7 @@
 import { useTrades } from '@/hooks/useTrades';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile';
-import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing } from 'lucide-react';
+import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -218,9 +218,17 @@ export default function Profile() {
 
       {/* Menu items */}
       <div className="glass-card divide-y divide-border animate-fade-in">
+        <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/analytics')}>
+          <BarChart3 className="h-5 w-5 text-muted-foreground" />
+          <span className="text-sm text-foreground flex-1">Analytics</span>
+        </button>
+        <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/psychology')}>
+          <Brain className="h-5 w-5 text-muted-foreground" />
+          <span className="text-sm text-foreground flex-1">Psychology</span>
+        </button>
         <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/notifications')}>
           <Bell className="h-5 w-5 text-muted-foreground" />
-          <span className="text-sm text-foreground flex-1">Notifications</span>
+          <span className="text-sm text-foreground flex-1">Notifications & News</span>
         </button>
         <button
           className="flex items-center gap-3 w-full px-4 py-3.5 text-left"
