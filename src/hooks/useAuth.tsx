@@ -8,6 +8,7 @@ interface AuthContextType {
   loading: boolean;
   subscribed: boolean;
   subscriptionEnd: string | null;
+  isAdmin: boolean;
   checkSubscription: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   subscribed: false,
   subscriptionEnd: null,
+  isAdmin: false,
   checkSubscription: async () => {},
   signOut: async () => {},
 });
@@ -28,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [subscribed, setSubscribed] = useState(false);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const checkSubscription = useCallback(async () => {
     try {
@@ -61,9 +64,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (user) {
       checkSubscription();
+      // Check admin role
+      supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle()
+        .then(({ data }) => setIsAdmin(!!data));
     } else {
       setSubscribed(false);
       setSubscriptionEnd(null);
+      setIsAdmin(false);
     }
   }, [user, checkSubscription]);
 
@@ -72,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, subscribed, subscriptionEnd, checkSubscription, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, subscribed, subscriptionEnd, isAdmin, checkSubscription, signOut }}>
       {children}
     </AuthContext.Provider>
   );

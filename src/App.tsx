@@ -18,6 +18,8 @@ const Psychology = lazy(() => import("./pages/Psychology"));
 const AICoach = lazy(() => import("./pages/AICoach"));
 const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Upgrade = lazy(() => import("./pages/Upgrade"));
+const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,8 @@ const App = () => (
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/psychology" element={<Psychology />} />
                 <Route path="/coach" element={<AICoach />} />
+                <Route path="/upgrade" element={<Upgrade />} />
+                <Route path="/admin/users" element={<AdminUsers />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
