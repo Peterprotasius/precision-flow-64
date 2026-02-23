@@ -14,7 +14,7 @@ import { registerPushNotifications } from '@/lib/push-notifications';
 
 export default function Profile() {
   const { data: trades = [] } = useTrades();
-  const { user, signOut, subscribed, subscriptionEnd, checkSubscription } = useAuth();
+  const { user, signOut, subscribed, subscriptionEnd, isAdmin, checkSubscription } = useAuth();
   const { data: profile } = useProfile();
   const updateProfile = useUpdateProfile();
   const uploadAvatar = useUploadAvatar();
@@ -218,6 +218,13 @@ export default function Profile() {
 
       {/* Menu items */}
       <div className="glass-card divide-y divide-border animate-fade-in">
+        {isAdmin && (
+          <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/admin/users')}>
+            <Shield className="h-5 w-5 text-chart-4" />
+            <span className="text-sm text-foreground flex-1 font-semibold">Admin Panel</span>
+            <span className="text-[10px] bg-chart-4/20 text-chart-4 px-1.5 py-0.5 rounded-full font-bold">ADMIN</span>
+          </button>
+        )}
         <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/analytics')}>
           <BarChart3 className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm text-foreground flex-1">Analytics</span>

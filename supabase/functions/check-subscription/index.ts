@@ -19,9 +19,6 @@ serve(async (req) => {
   );
 
   try {
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
 
@@ -30,6 +27,37 @@ serve(async (req) => {
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
+
+    // 1. Check manual Pro status from profiles table
+    const { data: profile } = await supabaseClient
+      .from("profiles")
+      .select("is_pro, pro_expires_at")
+      .eq("user_id", user.id)
+      .single();
+
+    if (profile?.is_pro && profile?.pro_expires_at) {
+      const expiresAt = new Date(profile.pro_expires_at);
+      if (expiresAt >= new Date()) {
+        return new Response(JSON.stringify({
+          subscribed: true,
+          subscription_end: profile.pro_expires_at,
+          source: "manual",
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+    }
+
+    // 2. Fall back to Stripe subscription check
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      // No Stripe key configured — only manual Pro check applies
+      return new Response(JSON.stringify({ subscribed: false }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -59,6 +87,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
       subscription_end: subscriptionEnd,
+      source: "stripe",
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

@@ -1,28 +1,13 @@
 import { Crown, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProTrialBanner() {
   const { subscribed } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   if (subscribed) return null;
-
-  const handleUpgrade = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout');
-      if (error) throw error;
-      if (data?.url) window.open(data.url, '_blank');
-    } catch {
-      toast.error('Failed to start checkout.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-chart-4/30 bg-gradient-to-r from-chart-4/10 via-chart-5/10 to-primary/10 p-4 animate-fade-in">
@@ -44,11 +29,10 @@ export default function ProTrialBanner() {
           <Button
             size="sm"
             className="h-8 bg-chart-4 text-background hover:bg-chart-4/90 gap-1.5 text-xs font-semibold"
-            onClick={handleUpgrade}
-            disabled={loading}
+            onClick={() => navigate('/upgrade')}
           >
             <Crown className="h-3.5 w-3.5" />
-            {loading ? 'Loading...' : 'Upgrade to Pro'}
+            Upgrade to Pro
             <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         </div>
