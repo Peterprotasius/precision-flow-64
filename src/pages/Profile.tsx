@@ -210,8 +210,8 @@ export default function Profile() {
             <li>• Unlimited screenshot storage</li>
             <li>• Full insights dashboard</li>
           </ul>
-          <Button className="w-full bg-primary text-primary-foreground" onClick={handleUpgrade} disabled={checkoutLoading}>
-            {checkoutLoading ? 'Loading...' : 'Upgrade — $9/month'}
+          <Button className="w-full bg-primary text-primary-foreground" onClick={() => navigate('/upgrade')}>
+            Upgrade — $9/month
           </Button>
         </div>
       )}
