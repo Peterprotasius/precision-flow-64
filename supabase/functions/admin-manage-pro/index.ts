@@ -43,7 +43,7 @@ serve(async (req) => {
 
     const { action, user_id, months } = await req.json();
 
-    if (!user_id) throw new Error("user_id is required");
+    if (action !== "list" && !user_id) throw new Error("user_id is required");
 
     if (action === "activate") {
       // Activate Pro for N months (default 1)
