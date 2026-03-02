@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Eye, EyeOff, TrendingUp } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import smcLogLogo from '@/assets/smc-log-logo.png';
 
 export default function Auth() {
   const { user, loading: authLoading } = useAuth();
@@ -49,9 +50,7 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
       {/* Logo */}
       <div className="flex items-center gap-3 mb-8">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 glow-primary">
-          <TrendingUp className="h-6 w-6 text-primary" />
-        </div>
+        <img src={smcLogLogo} alt="SMC Log" className="h-12 w-12 rounded-xl" />
         <div>
           <h1 className="text-2xl font-bold text-foreground">Dr. Precision</h1>
           <p className="text-xs text-muted-foreground">SMC Trading Journal</p>
@@ -99,6 +98,25 @@ export default function Auth() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+            {isLogin && (
+              <button
+                type="button"
+                className="text-xs text-primary hover:underline self-end"
+                onClick={async () => {
+                  if (!email) {
+                    toast.error('Enter your email first');
+                    return;
+                  }
+                  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password`,
+                  });
+                  if (error) toast.error(error.message);
+                  else toast.success('Password reset link sent to your email!');
+                }}
+              >
+                Forgot password?
+              </button>
+            )}
           </div>
 
           <Button type="submit" className="w-full bg-primary text-primary-foreground" disabled={submitting}>
