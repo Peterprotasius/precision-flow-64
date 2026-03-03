@@ -6,6 +6,11 @@ import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis
 import DashboardHeader from '@/components/DashboardHeader';
 import ProUpgradeModal from '@/components/ProUpgradeModal';
 import { useAuth } from '@/hooks/useAuth';
+import NewMetricCards from '@/components/dashboard/NewMetricCards';
+import EdgeScoreWidget from '@/components/dashboard/EdgeScoreWidget';
+import EnhancedEquityCurve from '@/components/dashboard/EnhancedEquityCurve';
+import TodaySummaryCard from '@/components/dashboard/TodaySummaryCard';
+import SampleSizeWarning from '@/components/dashboard/SampleSizeWarning';
 
 export default function Dashboard() {
   const { data: trades = [], isLoading } = useTrades();
@@ -19,9 +24,15 @@ export default function Dashboard() {
       ? closedTrades.reduce((sum, t) => sum + t.rrRatio, 0) / closedTrades.length
       : 0;
 
-    const pairPL: Record<string, number> = {};
-    closedTrades.forEach(t => { pairPL[t.pair] = (pairPL[t.pair] || 0) + t.profitLossAmount; });
-    const sortedPairs = Object.entries(pairPL).sort((a, b) => b[1] - a[1]);
+    const pairPL: Record<string, { pl: number; count: number }> = {};
+    closedTrades.forEach(t => {
+      if (!pairPL[t.pair]) pairPL[t.pair] = { pl: 0, count: 0 };
+      pairPL[t.pair].pl += t.profitLossAmount;
+      pairPL[t.pair].count++;
+    });
+    // Only show pairs with >= 5 trades
+    const qualifiedPairs = Object.entries(pairPL).filter(([, v]) => v.count >= 5);
+    const sortedPairs = qualifiedPairs.sort((a, b) => b[1].pl - a[1].pl);
     const bestPair = sortedPairs[0]?.[0] || '—';
     const worstPair = sortedPairs[sortedPairs.length - 1]?.[0] || '—';
 
@@ -44,6 +55,9 @@ export default function Dashboard() {
 
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const { subscribed } = useAuth();
+
+  // Check if best/worst pair has enough trades for tooltip
+  const hasPairData = stats.bestPair !== '—';
 
   if (isLoading) return <div className="px-4 pt-6"><p className="text-muted-foreground">Loading...</p></div>;
 
@@ -72,6 +86,7 @@ export default function Dashboard() {
         </button>
       )}
 
+      {/* Existing metric cards — unchanged */}
       <div className="grid grid-cols-2 gap-3">
         <StatCard label="Total Trades" value={stats.total} icon={<BarChart3 className="h-4 w-4" />} />
         <StatCard label="Win Rate" value={`${stats.winRate}%`} icon={<Target className="h-4 w-4" />} trend={stats.winRate >= 50 ? 'up' : 'down'} />
@@ -82,36 +97,37 @@ export default function Dashboard() {
           trend={stats.totalPL >= 0 ? 'up' : 'down'}
         />
         <StatCard label="Avg R:R" value={`${stats.avgRR}:1`} icon={<Target className="h-4 w-4" />} />
-        <StatCard label="Best Pair" value={stats.bestPair} icon={<Trophy className="h-4 w-4" />} trend="up" />
-        <StatCard label="Worst Pair" value={stats.worstPair} icon={<AlertTriangle className="h-4 w-4" />} trend="down" />
-      </div>
-
-      {/* Equity Curve */}
-      <div className="glass-card p-4 animate-slide-up">
-        <h2 className="stat-label mb-3">Equity Curve</h2>
-        <div className="h-40">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={stats.equityCurve}>
-              <defs>
-                <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(174, 72%, 46%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(174, 72%, 46%)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(215, 12%, 55%)' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: 'hsl(215, 12%, 55%)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
-              <Tooltip
-                contentStyle={{ backgroundColor: 'hsl(220, 18%, 14%)', border: '1px solid hsl(220, 14%, 22%)', borderRadius: '8px', fontSize: 12 }}
-                labelStyle={{ color: 'hsl(210, 20%, 92%)' }}
-                formatter={(value: number) => [`$${value}`, 'Equity']}
-              />
-              <Area type="monotone" dataKey="equity" stroke="hsl(174, 72%, 46%)" fill="url(#equityGrad)" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
+        <div className="relative group">
+          <StatCard label="Best Pair" value={stats.bestPair} icon={<Trophy className="h-4 w-4" />} trend={hasPairData ? 'up' : undefined} />
+          {!hasPairData && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-popover border border-border rounded-lg text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+              Minimum 5 trades required for pair ranking
+            </div>
+          )}
+        </div>
+        <div className="relative group">
+          <StatCard label="Worst Pair" value={stats.worstPair} icon={<AlertTriangle className="h-4 w-4" />} trend={hasPairData ? 'down' : undefined} />
+          {!hasPairData && (
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-popover border border-border rounded-lg text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+              Minimum 5 trades required for pair ranking
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Win/Loss Pie */}
+      {/* NEW: Sample size warning */}
+      <SampleSizeWarning tradeCount={stats.total} />
+
+      {/* NEW: Additional metric cards (1A) */}
+      <NewMetricCards trades={trades} />
+
+      {/* NEW: Edge Score Widget (1B) */}
+      <EdgeScoreWidget trades={trades} />
+
+      {/* UPGRADED: Enhanced Equity Curve (1C) — replaces old simple curve */}
+      <EnhancedEquityCurve trades={trades} />
+
+      {/* Win/Loss Pie — existing, untouched */}
       <div className="glass-card p-4 animate-slide-up">
         <h2 className="stat-label mb-3">Win vs Loss</h2>
         <div className="flex items-center justify-center gap-8">
@@ -137,8 +153,10 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* NEW: Today's Summary Card (1D) */}
+      <TodaySummaryCard trades={trades} />
+
       <ProUpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
     </div>
   );
 }
-
