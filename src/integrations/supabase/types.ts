@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      broker_connections: {
+        Row: {
+          account_number: string | null
+          broker_name: string
+          broker_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_synced_at: string | null
+          sync_status: string | null
+          user_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          broker_name: string
+          broker_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          sync_status?: string | null
+          user_id: string
+        }
+        Update: {
+          account_number?: string | null
+          broker_name?: string
+          broker_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_synced_at?: string | null
+          sync_status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_reads: {
         Row: {
           id: string
@@ -132,6 +168,78 @@ export type Database = {
           endpoint?: string
           id?: string
           p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trade_screenshots: {
+        Row: {
+          annotated_url: string | null
+          created_at: string
+          id: string
+          image_type: string
+          image_url: string
+          trade_id: string
+          user_id: string
+        }
+        Insert: {
+          annotated_url?: string | null
+          created_at?: string
+          id?: string
+          image_type?: string
+          image_url: string
+          trade_id: string
+          user_id: string
+        }
+        Update: {
+          annotated_url?: string | null
+          created_at?: string
+          id?: string
+          image_type?: string
+          image_url?: string
+          trade_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trade_tags: {
+        Row: {
+          created_at: string
+          custom_strategy_name: string | null
+          execution_quality: string | null
+          id: string
+          session: string | null
+          setup_types: string[] | null
+          strategy: string | null
+          timeframe_bias: string[] | null
+          trade_id: string
+          trade_outcome_tag: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_strategy_name?: string | null
+          execution_quality?: string | null
+          id?: string
+          session?: string | null
+          setup_types?: string[] | null
+          strategy?: string | null
+          timeframe_bias?: string[] | null
+          trade_id: string
+          trade_outcome_tag?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_strategy_name?: string | null
+          execution_quality?: string | null
+          id?: string
+          session?: string | null
+          setup_types?: string[] | null
+          strategy?: string | null
+          timeframe_bias?: string[] | null
+          trade_id?: string
+          trade_outcome_tag?: string | null
           user_id?: string
         }
         Relationships: []
