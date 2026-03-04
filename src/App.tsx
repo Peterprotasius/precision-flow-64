@@ -20,6 +20,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Upgrade = lazy(() => import("./pages/Upgrade"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
+const BrokerSync = lazy(() => import("./pages/BrokerSync"));
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
                 <Route path="/coach" element={<AICoach />} />
                 <Route path="/upgrade" element={<Upgrade />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
+                <Route path="/broker-sync" element={<BrokerSync />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
