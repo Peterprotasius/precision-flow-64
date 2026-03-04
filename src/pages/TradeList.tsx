@@ -1,16 +1,42 @@
 import { useState, useMemo } from 'react';
 import { useTrades } from '@/hooks/useTrades';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { Trade } from '@/lib/mock-data';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowUpRight, ArrowDownRight, ChevronRight, Filter } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, ChevronRight, Filter, Image } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function TradeList() {
   const { data: trades = [], isLoading } = useTrades();
+  const { user } = useAuth();
   const [filterPair, setFilterPair] = useState('all');
   const [filterResult, setFilterResult] = useState('all');
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+
+  // Fetch all trade tags
+  const { data: allTags = [] } = useQuery({
+    queryKey: ['trade-tags', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('trade_tags').select('*');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Fetch all trade screenshots
+  const { data: allScreenshots = [] } = useQuery({
+    queryKey: ['trade-screenshots', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('trade_screenshots').select('*');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
 
   const filtered = useMemo(() => {
     return trades
@@ -20,6 +46,9 @@ export default function TradeList() {
   }, [trades, filterPair, filterResult]);
 
   const uniquePairs = [...new Set(trades.map(t => t.pair))];
+
+  const getTagsForTrade = (tradeId: string) => allTags.find((t: any) => t.trade_id === tradeId);
+  const getScreenshotsForTrade = (tradeId: string) => allScreenshots.filter((s: any) => s.trade_id === tradeId);
 
   if (isLoading) return <div className="px-4 pt-6"><p className="text-muted-foreground">Loading...</p></div>;
 
@@ -61,27 +90,46 @@ export default function TradeList() {
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(trade => (
-            <button key={trade.id} className="glass-card p-4 w-full text-left flex items-center gap-3 animate-fade-in" onClick={() => setSelectedTrade(trade)}>
-              <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${trade.direction === 'buy' ? 'bg-success/15' : 'bg-loss/15'}`}>
-                {trade.direction === 'buy' ? <ArrowUpRight className="h-5 w-5 text-success" /> : <ArrowDownRight className="h-5 w-5 text-loss" />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-foreground">{trade.pair}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${trade.result === 'win' ? 'bg-success/15 text-success' : 'bg-loss/15 text-loss'}`}>{trade.result.toUpperCase()}</span>
+          {filtered.map(trade => {
+            const tags = getTagsForTrade(trade.id);
+            const screenshots = getScreenshotsForTrade(trade.id);
+            return (
+              <button key={trade.id} className="glass-card p-4 w-full text-left flex items-center gap-3 animate-fade-in" onClick={() => setSelectedTrade(trade)}>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${trade.direction === 'buy' ? 'bg-success/15' : 'bg-loss/15'}`}>
+                  {trade.direction === 'buy' ? <ArrowUpRight className="h-5 w-5 text-success" /> : <ArrowDownRight className="h-5 w-5 text-loss" />}
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                  <span>{trade.timeframe}</span><span>·</span><span>{new Date(trade.createdAt).toLocaleDateString()}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-foreground">{trade.pair}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${trade.result === 'win' ? 'bg-success/15 text-success' : 'bg-loss/15 text-loss'}`}>{trade.result.toUpperCase()}</span>
+                    {screenshots.length > 0 && <Image className="h-3 w-3 text-muted-foreground" />}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                    <span>{trade.timeframe}</span><span>·</span><span>{new Date(trade.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  {/* Tag chips */}
+                  {tags && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {tags.strategy && tags.strategy !== 'Smart Money Concepts' && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/15 text-primary">{tags.strategy}</span>
+                      )}
+                      {tags.session && tags.session !== 'Other' && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-chart-4/15 text-chart-4">{tags.session}</span>
+                      )}
+                      {(tags.setup_types as string[] || []).slice(0, 2).map((st: string) => (
+                        <span key={st} className="text-[9px] px-1.5 py-0.5 rounded bg-chart-5/15 text-chart-5">{st}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="text-right">
-                <p className={`font-semibold ${trade.profitLossAmount >= 0 ? 'text-success' : 'text-loss'}`}>{trade.profitLossAmount >= 0 ? '+' : ''}${trade.profitLossAmount}</p>
-                <p className="text-xs text-muted-foreground">{trade.rrRatio}:1 R:R</p>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </button>
-          ))}
+                <div className="text-right">
+                  <p className={`font-semibold ${trade.profitLossAmount >= 0 ? 'text-success' : 'text-loss'}`}>{trade.profitLossAmount >= 0 ? '+' : ''}${trade.profitLossAmount}</p>
+                  <p className="text-xs text-muted-foreground">{trade.rrRatio}:1 R:R</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -111,6 +159,46 @@ export default function TradeList() {
                     <div>Order Block: <span className={selectedTrade.orderBlock ? 'text-success' : 'text-loss'}>{selectedTrade.orderBlock ? 'Yes' : 'No'}</span></div>
                   </div>
                 </div>
+
+                {/* Tags section */}
+                {(() => {
+                  const tags = getTagsForTrade(selectedTrade.id);
+                  if (!tags) return null;
+                  return (
+                    <div className="border-t border-border pt-3">
+                      <h3 className="text-primary font-semibold text-xs uppercase tracking-wider mb-2">Tags</h3>
+                      <div className="flex flex-wrap gap-1.5">
+                        {tags.strategy && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/15 text-primary">{tags.strategy}</span>}
+                        {tags.session && tags.session !== 'Other' && <span className="text-[10px] px-2 py-0.5 rounded-full bg-chart-4/15 text-chart-4">{tags.session}</span>}
+                        {tags.execution_quality && <span className="text-[10px] px-2 py-0.5 rounded-full bg-chart-5/15 text-chart-5">{tags.execution_quality}</span>}
+                        {(tags.setup_types as string[] || []).map((st: string) => (
+                          <span key={st} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">{st}</span>
+                        ))}
+                        {tags.trade_outcome_tag && <span className="text-[10px] px-2 py-0.5 rounded-full bg-success/15 text-success">{tags.trade_outcome_tag}</span>}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Screenshots section */}
+                {(() => {
+                  const screenshots = getScreenshotsForTrade(selectedTrade.id);
+                  if (screenshots.length === 0) return null;
+                  return (
+                    <div className="border-t border-border pt-3">
+                      <h3 className="text-primary font-semibold text-xs uppercase tracking-wider mb-2">Chart Screenshots</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {screenshots.map((s: any) => (
+                          <div key={s.id} className="space-y-1">
+                            <span className="text-[10px] text-muted-foreground capitalize">{s.image_type}</span>
+                            <img src={s.image_url} alt={s.image_type} className="w-full rounded-lg border border-border" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div className="border-t border-border pt-3">
                   <h3 className="text-primary font-semibold text-xs uppercase tracking-wider mb-2">Psychology</h3>
                   <div className="grid grid-cols-2 gap-2 text-xs">
