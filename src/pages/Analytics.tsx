@@ -6,8 +6,10 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell,
 } from 'recharts';
-import { Lock, TrendingUp, TrendingDown, Target, BarChart3, Shield, Zap } from 'lucide-react';
+import { Lock, TrendingUp, TrendingDown, Target, BarChart3, Shield, Zap, Download } from 'lucide-react';
 import ProUpgradeModal from '@/components/ProUpgradeModal';
+import ProgressTab from '@/components/analytics/ProgressTab';
+import ExportSection from '@/components/analytics/ExportSection';
 
 function LockedOverlay({ onUpgrade }: { onUpgrade: () => void }) {
   return (
@@ -29,6 +31,7 @@ export default function Analytics() {
   const { data: trades = [], isLoading } = useTrades();
   const { subscribed } = useAuth();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'analytics' | 'progress'>('analytics');
 
   const stats = useMemo(() => calcPortfolioStats(trades), [trades]);
 
@@ -58,10 +61,38 @@ export default function Analytics() {
 
   return (
     <div className="px-4 pt-6 pb-6 space-y-5">
-      <div>
-        <h1 className="text-xl font-bold text-foreground">Analytics</h1>
-        <p className="text-sm text-muted-foreground">Institutional performance metrics</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Analytics</h1>
+          <p className="text-sm text-muted-foreground">Institutional performance metrics</p>
+        </div>
+        <ExportSection />
       </div>
+
+      {/* Tab Switcher */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setActiveTab('analytics')}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
+            activeTab === 'analytics' ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground'
+          }`}
+        >
+          Analytics
+        </button>
+        <button
+          onClick={() => setActiveTab('progress')}
+          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
+            activeTab === 'progress' ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground'
+          }`}
+        >
+          Progress
+        </button>
+      </div>
+
+      {activeTab === 'progress' ? (
+        <ProgressTab />
+      ) : (
+      <>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 gap-3">
@@ -203,6 +234,9 @@ export default function Analytics() {
         </div>
         {!subscribed && <LockedOverlay onUpgrade={() => setUpgradeOpen(true)} />}
       </div>
+
+      </>
+      )}
 
       <ProUpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
     </div>

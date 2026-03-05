@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          badge_description: string | null
+          badge_key: string
+          badge_name: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_description?: string | null
+          badge_key: string
+          badge_name: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_description?: string | null
+          badge_key?: string
+          badge_name?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       broker_connections: {
         Row: {
           account_number: string | null
@@ -336,6 +363,39 @@ export type Database = {
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_xp: {
+        Row: {
+          current_level: string
+          current_streak: number
+          id: string
+          last_trade_date: string | null
+          longest_streak: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_level?: string
+          current_streak?: number
+          id?: string
+          last_trade_date?: string | null
+          longest_streak?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_level?: string
+          current_streak?: number
+          id?: string
+          last_trade_date?: string | null
+          longest_streak?: number
+          total_xp?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

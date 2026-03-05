@@ -11,6 +11,7 @@ import EdgeScoreWidget from '@/components/dashboard/EdgeScoreWidget';
 import EnhancedEquityCurve from '@/components/dashboard/EnhancedEquityCurve';
 import TodaySummaryCard from '@/components/dashboard/TodaySummaryCard';
 import SampleSizeWarning from '@/components/dashboard/SampleSizeWarning';
+import ProgressCard from '@/components/dashboard/ProgressCard';
 
 export default function Dashboard() {
   const { data: trades = [], isLoading } = useTrades();
@@ -155,6 +156,9 @@ export default function Dashboard() {
 
       {/* NEW: Today's Summary Card (1D) */}
       <TodaySummaryCard trades={trades} />
+
+      {/* Progress & Gamification Card */}
+      <ProgressCard />
 
       <ProUpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
     </div>
