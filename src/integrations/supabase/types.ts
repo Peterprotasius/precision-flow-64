@@ -172,6 +172,108 @@ export type Database = {
         }
         Relationships: []
       }
+      prop_accounts: {
+        Row: {
+          account_label: string
+          account_size: number
+          created_at: string
+          current_balance: number
+          current_pnl: number
+          daily_loss_limit_pct: number
+          daily_pnl: number
+          end_date: string | null
+          firm_name: string
+          id: string
+          phase: string
+          profit_target_pct: number
+          start_date: string
+          status: string
+          total_drawdown_pct: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_label?: string
+          account_size?: number
+          created_at?: string
+          current_balance?: number
+          current_pnl?: number
+          daily_loss_limit_pct?: number
+          daily_pnl?: number
+          end_date?: string | null
+          firm_name: string
+          id?: string
+          phase?: string
+          profit_target_pct?: number
+          start_date?: string
+          status?: string
+          total_drawdown_pct?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_label?: string
+          account_size?: number
+          created_at?: string
+          current_balance?: number
+          current_pnl?: number
+          daily_loss_limit_pct?: number
+          daily_pnl?: number
+          end_date?: string | null
+          firm_name?: string
+          id?: string
+          phase?: string
+          profit_target_pct?: number
+          start_date?: string
+          status?: string
+          total_drawdown_pct?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      psychology_checkins: {
+        Row: {
+          checkin_type: string
+          confidence_rating: number
+          created_at: string
+          emotional_state: string
+          energy_level: number
+          htf_bias: string | null
+          id: string
+          market_conditions: string | null
+          notes: string | null
+          sleep_quality: number
+          user_id: string
+        }
+        Insert: {
+          checkin_type?: string
+          confidence_rating?: number
+          created_at?: string
+          emotional_state?: string
+          energy_level?: number
+          htf_bias?: string | null
+          id?: string
+          market_conditions?: string | null
+          notes?: string | null
+          sleep_quality?: number
+          user_id: string
+        }
+        Update: {
+          checkin_type?: string
+          confidence_rating?: number
+          created_at?: string
+          emotional_state?: string
+          energy_level?: number
+          htf_bias?: string | null
+          id?: string
+          market_conditions?: string | null
+          notes?: string | null
+          sleep_quality?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
