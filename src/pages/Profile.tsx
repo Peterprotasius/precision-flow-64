@@ -1,7 +1,7 @@
 import { useTrades } from '@/hooks/useTrades';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile';
-import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain, Wifi } from 'lucide-react';
+import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain, Wifi, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -228,6 +228,10 @@ export default function Profile() {
         <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/broker-sync')}>
           <Wifi className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm text-foreground flex-1">Connect Broker</span>
+        </button>
+        <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/prop-tracker')}>
+          <Target className="h-5 w-5 text-muted-foreground" />
+          <span className="text-sm text-foreground flex-1">Prop Accounts</span>
         </button>
         <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => navigate('/analytics')}>
           <BarChart3 className="h-5 w-5 text-muted-foreground" />

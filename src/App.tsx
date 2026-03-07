@@ -23,6 +23,7 @@ const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const BrokerSync = lazy(() => import("./pages/BrokerSync"));
 const SessionAnalytics = lazy(() => import("./pages/SessionAnalytics"));
 const RiskCalculator = lazy(() => import("./pages/RiskCalculator"));
+const PropFirmTracker = lazy(() => import("./pages/PropFirmTracker"));
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
                 <Route path="/broker-sync" element={<BrokerSync />} />
                 <Route path="/session-analytics" element={<SessionAnalytics />} />
                 <Route path="/risk-calculator" element={<RiskCalculator />} />
+                <Route path="/prop-tracker" element={<PropFirmTracker />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
