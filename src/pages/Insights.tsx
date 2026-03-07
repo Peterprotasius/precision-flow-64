@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTrades } from '@/hooks/useTrades';
-import { TrendingUp, TrendingDown, Zap, AlertTriangle, Target, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { TrendingUp, TrendingDown, Zap, AlertTriangle, Target, Clock, BarChart3, Calculator } from 'lucide-react';
 
 interface Insight {
   icon: React.ReactNode;
@@ -12,6 +13,7 @@ interface Insight {
 
 export default function Insights() {
   const { data: trades = [], isLoading } = useTrades();
+  const navigate = useNavigate();
 
   const insights = useMemo<Insight[]>(() => {
     const closed = trades.filter(t => t.result === 'win' || t.result === 'loss');
@@ -71,6 +73,26 @@ export default function Insights() {
           ))}
         </div>
       )}
+
+      {/* Quick Links */}
+      <div className="grid grid-cols-2 gap-3 pt-2">
+        <button
+          onClick={() => navigate('/session-analytics')}
+          className="glass-card p-4 text-left hover:border-primary/30 transition-colors"
+        >
+          <BarChart3 className="h-5 w-5 text-primary mb-2" />
+          <p className="text-sm font-bold text-foreground">Deep Analytics</p>
+          <p className="text-[10px] text-muted-foreground">Session, strategy & TF breakdown</p>
+        </button>
+        <button
+          onClick={() => navigate('/risk-calculator')}
+          className="glass-card p-4 text-left hover:border-primary/30 transition-colors"
+        >
+          <Calculator className="h-5 w-5 text-chart-4 mb-2" />
+          <p className="text-sm font-bold text-foreground">Risk Calculator</p>
+          <p className="text-[10px] text-muted-foreground">Position sizing tool</p>
+        </button>
+      </div>
     </div>
   );
 }
