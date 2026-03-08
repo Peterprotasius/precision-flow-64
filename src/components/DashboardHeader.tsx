@@ -27,6 +27,7 @@ export default function DashboardHeader() {
           <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
           <p className="text-sm text-muted-foreground">Your trading overview</p>
         </div>
+      </div>
       <div className="flex items-center gap-2">
         <button
           onClick={toggleTheme}
