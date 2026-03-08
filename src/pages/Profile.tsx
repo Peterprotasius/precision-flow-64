@@ -4,6 +4,7 @@ import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfil
 import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain, Wifi, Target, Sun, Moon, Palette, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
