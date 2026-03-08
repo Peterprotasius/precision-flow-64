@@ -5,7 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Shield, Crown, ArrowLeft, Search, UserCheck, UserX, Clock, Loader2 } from 'lucide-react';
+import { Shield, Crown, ArrowLeft, Search, UserCheck, UserX, Clock, Loader2, CreditCard, DollarSign, MessageSquare, TrendingUp } from 'lucide-react';
+import PaymentConfirmationsAdmin from '@/components/admin/PaymentConfirmationsAdmin';
+import SubscriptionPricingAdmin from '@/components/admin/SubscriptionPricingAdmin';
+import SupportTicketsAdmin from '@/components/admin/SupportTicketsAdmin';
+import MarketAnalysisSettingsAdmin from '@/components/admin/MarketAnalysisSettingsAdmin';
 
 interface UserProfile {
   user_id: string;
@@ -25,6 +29,7 @@ export default function AdminUsers() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [adminTab, setAdminTab] = useState<'users' | 'payments' | 'pricing' | 'tickets' | 'market'>('users');
 
   // Check if current user is admin
   useEffect(() => {
