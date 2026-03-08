@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,6 +13,30 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate the caller
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const userClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
@@ -113,11 +137,14 @@ serve(async (req) => {
     const parsed = JSON.parse(toolCall.function.arguments);
     const notifications = parsed.notifications;
 
+    // Cap notifications to prevent flooding
+    const cappedNotifications = Array.isArray(notifications) ? notifications.slice(0, 10) : [];
+
     // Insert notifications into DB
-    if (notifications && notifications.length > 0) {
+    if (cappedNotifications.length > 0) {
       const { error: insertErr } = await supabase
         .from("notifications")
-        .insert(notifications);
+        .insert(cappedNotifications);
       if (insertErr) {
         console.error("Insert error:", insertErr);
         throw new Error("Failed to save notifications");
@@ -125,13 +152,13 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, count: notifications?.length ?? 0 }),
+      JSON.stringify({ success: true, count: cappedNotifications.length }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
     console.error("fetch-trading-news error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "An internal error occurred." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
