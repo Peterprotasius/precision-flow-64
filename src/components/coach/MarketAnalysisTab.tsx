@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Bot, Send, TrendingUp, Lock } from 'lucide-react';
@@ -54,6 +54,11 @@ export default function MarketAnalysisTab() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
 
   const analyzeInstrument = async (instrument: string) => {
     if (!subscribed) {
@@ -81,20 +86,33 @@ export default function MarketAnalysisTab() {
       const { data, error } = await supabase.functions.invoke('ai-market-analysis', {
         body: { messages: allMsgs },
       });
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Market analysis error:', error);
+        throw error;
+      }
+      
+      if (!data?.content) {
+        throw new Error('No content in response');
+      }
 
       const assistantMsg: Message = { role: 'assistant', content: data.content };
       setMessages(prev => [...prev, assistantMsg]);
 
-      // Log analysis
-      supabase.from('market_analysis_log').insert({
-        user_id: (await supabase.auth.getUser()).data.user?.id,
-        instrument: text,
-        analysis_text: data.content,
-        bias: '',
-        direction: '',
-      }).then(() => {});
+      // Log analysis (fire and forget)
+      supabase.auth.getUser().then(({ data: userData }) => {
+        if (userData?.user?.id) {
+          supabase.from('market_analysis_log').insert({
+            user_id: userData.user.id,
+            instrument: text,
+            analysis_text: data.content,
+            bias: '',
+            direction: '',
+          }).then(() => {});
+        }
+      });
     } catch (e: any) {
+      console.error('Market analysis catch:', e);
       if (e?.message?.includes('429')) {
         toast.error('Rate limit reached. Please wait a moment.');
       } else {
@@ -185,6 +203,7 @@ export default function MarketAnalysisTab() {
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
