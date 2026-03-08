@@ -28,6 +28,7 @@ export default function ExportSection() {
 
   const stats = useMemo(() => calcPortfolioStats(filteredTrades), [filteredTrades]);
   const level = getLevelFromXP(xp?.totalXp ?? 0);
+  const rangeLabel = range === '7d' ? 'Last 7 Days' : range === '30d' ? 'Last 30 Days' : range === '90d' ? 'Last 90 Days' : 'All Time';
 
   const generateCSV = useCallback(() => {
     const headers = ['Date', 'Pair', 'Direction', 'Entry', 'SL', 'TP', 'Lot Size', 'Risk %', 'R:R', 'Result', 'P/L'];
@@ -154,8 +155,6 @@ export default function ExportSection() {
       await navigator.clipboard.writeText(text);
     }
   };
-
-  const rangeLabel = range === '7d' ? 'Last 7 Days' : range === '30d' ? 'Last 30 Days' : range === '90d' ? 'Last 90 Days' : 'All Time';
 
   return (
     <>
