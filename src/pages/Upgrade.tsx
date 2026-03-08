@@ -17,12 +17,18 @@ const BANK_DETAILS = {
 };
 
 const FEATURES = [
-  { icon: <Zap className="h-4 w-4" />, label: 'Unlimited trades' },
-  { icon: <BarChart3 className="h-4 w-4" />, label: 'Full institutional analytics' },
-  { icon: <Brain className="h-4 w-4" />, label: 'AI Trade Coach (GPT-powered)' },
-  { icon: <Shield className="h-4 w-4" />, label: 'Edge Score & Discipline Score' },
-  { icon: <Sparkles className="h-4 w-4" />, label: 'Psychology module & pattern detection' },
-  { icon: <BarChart3 className="h-4 w-4" />, label: 'Risk simulator & screenshot storage' },
+  { icon: <Zap className="h-4 w-4" />, label: 'Unlimited trade logging' },
+  { icon: <BarChart3 className="h-4 w-4" />, label: 'Full institutional analytics & equity curve' },
+  { icon: <Brain className="h-4 w-4" />, label: 'AI Trade Coach (GPT-powered insights)' },
+  { icon: <Sparkles className="h-4 w-4" />, label: 'AI Market Analysis (Gold, USDT, V75 & more)' },
+  { icon: <Shield className="h-4 w-4" />, label: 'Edge Score & Discipline Score tracking' },
+  { icon: <Sparkles className="h-4 w-4" />, label: 'Psychology module & emotional check-ins' },
+  { icon: <BarChart3 className="h-4 w-4" />, label: 'Prop Firm Challenge Tracker' },
+  { icon: <Shield className="h-4 w-4" />, label: 'Risk calculator & position sizing' },
+  { icon: <BarChart3 className="h-4 w-4" />, label: 'Session analytics & performance heatmaps' },
+  { icon: <Zap className="h-4 w-4" />, label: 'Broker auto-sync (MT4/MT5)' },
+  { icon: <Brain className="h-4 w-4" />, label: 'Trade screenshot storage & annotation' },
+  { icon: <Sparkles className="h-4 w-4" />, label: 'XP gamification, streaks & achievements' },
 ];
 
 export default function Upgrade() {
