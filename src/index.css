@@ -54,6 +54,56 @@
     --sidebar-border: 220 14% 22%;
     --sidebar-ring: 174 72% 46%;
   }
+
+  [data-theme="light"] {
+    --background: 210 25% 96%;
+    --foreground: 210 24% 7%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 24% 7%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 24% 7%;
+
+    --primary: 174 55% 33%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 18% 93%;
+    --secondary-foreground: 210 18% 30%;
+
+    --muted: 210 14% 90%;
+    --muted-foreground: 210 10% 42%;
+
+    --accent: 174 55% 33%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 65% 48%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 16% 82%;
+    --input: 210 16% 82%;
+    --ring: 174 55% 33%;
+
+    --success: 145 50% 35%;
+    --success-foreground: 0 0% 100%;
+    --loss: 0 65% 48%;
+    --loss-foreground: 0 0% 100%;
+
+    --chart-1: 174 55% 33%;
+    --chart-2: 145 50% 35%;
+    --chart-3: 0 65% 48%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 262 50% 48%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 24% 7%;
+    --sidebar-primary: 174 55% 33%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 18% 93%;
+    --sidebar-accent-foreground: 210 18% 30%;
+    --sidebar-border: 210 16% 82%;
+    --sidebar-ring: 174 55% 33%;
+  }
 }
 
 @layer base {
@@ -91,4 +141,20 @@
   .glow-primary {
     box-shadow: 0 0 20px hsl(174 72% 46% / 0.15);
   }
+}
+
+/* Theme transition */
+* {
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Light mode card shadows */
+[data-theme="light"] .glass-card {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+/* Light mode prose override */
+[data-theme="light"] .prose-invert {
+  --tw-prose-body: hsl(210 24% 7%);
+  --tw-prose-headings: hsl(210 24% 7%);
 }
