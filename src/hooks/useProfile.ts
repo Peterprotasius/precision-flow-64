@@ -23,11 +23,21 @@ export function useProfile() {
         .eq('user_id', user!.id)
         .single();
       if (error) throw error;
+
+      // Generate signed URL for avatar if stored as a path
+      let avatarUrl = data.avatar_url;
+      if (avatarUrl && !avatarUrl.startsWith('http')) {
+        const { data: signedData } = await supabase.storage
+          .from('avatars')
+          .createSignedUrl(avatarUrl, 60 * 60); // 1 hour
+        avatarUrl = signedData?.signedUrl ?? null;
+      }
+
       return {
         id: data.id,
         userId: data.user_id,
         displayName: data.display_name,
-        avatarUrl: data.avatar_url,
+        avatarUrl,
         subscriptionStatus: data.subscription_status,
       } as Profile;
     },
@@ -74,8 +84,12 @@ export function useUploadAvatar() {
         .upload(path, file, { upsert: true });
       if (error) throw error;
 
-      const { data } = supabase.storage.from('avatars').getPublicUrl(path);
-      return data.publicUrl + '?t=' + Date.now();
+      // Return signed URL (bucket is now private)
+      const { data: signedData, error: signError } = await supabase.storage
+        .from('avatars')
+        .createSignedUrl(path, 60 * 60 * 24 * 365); // 1 year
+      if (signError) throw signError;
+      return signedData.signedUrl;
     },
   });
 }

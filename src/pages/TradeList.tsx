@@ -27,13 +27,33 @@ export default function TradeList() {
     enabled: !!user,
   });
 
-  // Fetch all trade screenshots
+  // Fetch all trade screenshots with signed URLs
   const { data: allScreenshots = [] } = useQuery({
     queryKey: ['trade-screenshots', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase.from('trade_screenshots').select('*');
       if (error) throw error;
-      return data;
+      // Generate signed URLs for each screenshot
+      const withSignedUrls = await Promise.all(
+        (data || []).map(async (s: any) => {
+          // If the image_url is a full URL with a token/signed already, try to extract path
+          // Otherwise use it as storage path
+          let url = s.image_url;
+          if (url && !url.includes('/sign/')) {
+            // Try to get a signed URL from the storage path
+            const pathMatch = url.match(/chart-screenshots\/(.+?)(\?|$)/);
+            const storagePath = pathMatch ? pathMatch[1] : null;
+            if (storagePath) {
+              const { data: signedData } = await supabase.storage
+                .from('chart-screenshots')
+                .createSignedUrl(storagePath, 60 * 60); // 1 hour
+              if (signedData?.signedUrl) url = signedData.signedUrl;
+            }
+          }
+          return { ...s, image_url: url };
+        })
+      );
+      return withSignedUrls;
     },
     enabled: !!user,
   });
