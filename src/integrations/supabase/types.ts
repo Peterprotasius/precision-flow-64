@@ -41,6 +41,27 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       broker_connections: {
         Row: {
           account_number: string | null
@@ -73,6 +94,36 @@ export type Database = {
           is_active?: boolean
           last_synced_at?: string | null
           sync_status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      market_analysis_log: {
+        Row: {
+          analysis_text: string
+          bias: string | null
+          created_at: string
+          direction: string | null
+          id: string
+          instrument: string
+          user_id: string
+        }
+        Insert: {
+          analysis_text: string
+          bias?: string | null
+          created_at?: string
+          direction?: string | null
+          id?: string
+          instrument: string
+          user_id: string
+        }
+        Update: {
+          analysis_text?: string
+          bias?: string | null
+          created_at?: string
+          direction?: string | null
+          id?: string
+          instrument?: string
           user_id?: string
         }
         Relationships: []
@@ -133,6 +184,48 @@ export type Database = {
           importance?: string
           source_url?: string | null
           title?: string
+        }
+        Relationships: []
+      }
+      payment_confirmations: {
+        Row: {
+          amount: number
+          id: string
+          notes: string | null
+          payment_method: string
+          reference: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          screenshot_url: string | null
+          status: string
+          submitted_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          id?: string
+          notes?: string | null
+          payment_method: string
+          reference: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          screenshot_url?: string | null
+          status?: string
+          submitted_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          reference?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          screenshot_url?: string | null
+          status?: string
+          submitted_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -301,6 +394,36 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          issue_description: string
+          resolved_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          issue_description: string
+          resolved_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          issue_description?: string
+          resolved_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       trade_screenshots: {
         Row: {
           annotated_url: string | null
@@ -447,6 +570,36 @@ export type Database = {
           stop_loss?: number
           take_profit?: number
           timeframe?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          currency: string
+          id: string
+          notification_settings: Json | null
+          theme: string
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          currency?: string
+          id?: string
+          notification_settings?: Json | null
+          theme?: string
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          currency?: string
+          id?: string
+          notification_settings?: Json | null
+          theme?: string
+          timezone?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
