@@ -1,7 +1,7 @@
 import { useTrades } from '@/hooks/useTrades';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile';
-import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain, Wifi, Target } from 'lucide-react';
+import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain, Wifi, Target, Sun, Moon, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -11,6 +11,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState, useRef } from 'react';
 import { registerPushNotifications } from '@/lib/push-notifications';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function Profile() {
   const { data: trades = [] } = useTrades();
@@ -25,6 +26,7 @@ export default function Profile() {
   const [editOpen, setEditOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (searchParams.get('subscription') === 'success') {
