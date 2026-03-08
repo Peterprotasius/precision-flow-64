@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Crown, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import topLogo from '@/assets/top-logo.ico';
 
 export default function DashboardHeader() {
   const navigate = useNavigate();
@@ -20,9 +21,12 @@ export default function DashboardHeader() {
 
   return (
     <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Your trading overview</p>
+      <div className="flex items-center gap-3">
+        <img src={topLogo} alt="SMC Logo" className="h-10 w-10 rounded-lg object-contain" />
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Your trading overview</p>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <button
