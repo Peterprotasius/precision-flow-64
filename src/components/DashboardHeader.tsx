@@ -37,26 +37,28 @@ export default function DashboardHeader() {
           )}
         </button>
         <button
-        className="relative flex items-center gap-2"
-      >
-        {subscribed && (
-          <div className="flex items-center gap-1 bg-chart-4/20 text-chart-4 text-[10px] font-bold px-2 py-0.5 rounded-full border border-chart-4/30">
-            <Crown className="h-3 w-3" />
-            PRO
+          onClick={() => navigate('/profile')}
+          className="relative flex items-center gap-2"
+        >
+          {subscribed && (
+            <div className="flex items-center gap-1 bg-chart-4/20 text-chart-4 text-[10px] font-bold px-2 py-0.5 rounded-full border border-chart-4/30">
+              <Crown className="h-3 w-3" />
+              PRO
+            </div>
+          )}
+          <div className="relative">
+            <Avatar className="h-9 w-9 ring-2 ring-primary/30">
+              {profile?.avatarUrl ? (
+                <AvatarImage src={profile.avatarUrl} alt="Avatar" />
+              ) : null}
+              <AvatarFallback className="bg-primary/20 text-primary text-sm font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-background" />
           </div>
-        )}
-        <div className="relative">
-          <Avatar className="h-9 w-9 ring-2 ring-primary/30">
-            {profile?.avatarUrl ? (
-              <AvatarImage src={profile.avatarUrl} alt="Avatar" />
-            ) : null}
-            <AvatarFallback className="bg-primary/20 text-primary text-sm font-semibold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-success border-2 border-background" />
-        </div>
-      </button>
+        </button>
+      </div>
     </div>
   );
 }
