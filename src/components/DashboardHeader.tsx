@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Crown, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import topLogo from '@/assets/top-logo.ico';
 
 export default function DashboardHeader() {
   const navigate = useNavigate();
