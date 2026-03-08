@@ -2,12 +2,14 @@ import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Crown } from 'lucide-react';
+import { Crown, Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function DashboardHeader() {
   const navigate = useNavigate();
   const { data: profile } = useProfile();
   const { user, subscribed } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const initials = (profile?.displayName || user?.email || 'T')
     .split(' ')
@@ -22,8 +24,19 @@ export default function DashboardHeader() {
         <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground">Your trading overview</p>
       </div>
-      <button
-        onClick={() => navigate('/profile')}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={toggleTheme}
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <Moon className="h-4 w-4 text-muted-foreground" />
+          )}
+        </button>
+        <button
         className="relative flex items-center gap-2"
       >
         {subscribed && (
