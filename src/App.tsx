@@ -25,6 +25,7 @@ const BrokerSync = lazy(() => import("./pages/BrokerSync"));
 const SessionAnalytics = lazy(() => import("./pages/SessionAnalytics"));
 const RiskCalculator = lazy(() => import("./pages/RiskCalculator"));
 const PropFirmTracker = lazy(() => import("./pages/PropFirmTracker"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
           <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route element={<ProtectedRoutes />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/add-trade" element={<AddTrade />} />

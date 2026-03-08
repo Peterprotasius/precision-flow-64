@@ -1,9 +1,10 @@
 import { useTrades } from '@/hooks/useTrades';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile, useUpdateProfile, useUploadAvatar } from '@/hooks/useProfile';
-import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain, Wifi, Target, Sun, Moon, Palette } from 'lucide-react';
+import { User, Crown, LogOut, Shield, Bell, HelpCircle, CheckCircle, Camera, Mail, BellRing, BarChart3, Brain, Wifi, Target, Sun, Moon, Palette, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
@@ -27,6 +28,12 @@ export default function Profile() {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { theme, setTheme } = useTheme();
+  const [changePassOpen, setChangePassOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showPassFields, setShowPassFields] = useState(false);
+  const [changingPass, setChangingPass] = useState(false);
 
   useEffect(() => {
     if (searchParams.get('subscription') === 'success') {
@@ -287,6 +294,10 @@ export default function Profile() {
           <BellRing className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm text-foreground">Enable Push Notifications</span>
         </button>
+        <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => setChangePassOpen(true)}>
+          <Lock className="h-5 w-5 text-muted-foreground" />
+          <span className="text-sm text-foreground">Change Password</span>
+        </button>
         <button className="flex items-center gap-3 w-full px-4 py-3.5 text-left" onClick={() => setPrivacyOpen(true)}>
           <Shield className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm text-foreground">Privacy & Security</span>
@@ -337,6 +348,83 @@ export default function Profile() {
                 traderdrprecision@gmail.com
               </a>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Change Password Dialog */}
+      <Dialog open={changePassOpen} onOpenChange={(open) => {
+        setChangePassOpen(open);
+        if (!open) {
+          setNewPassword('');
+          setConfirmNewPassword('');
+          setShowPassFields(false);
+        }
+      }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5 text-primary" />
+              Change Password
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm text-muted-foreground">New Password</Label>
+              <div className="relative">
+                <Input
+                  type={showPassFields ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="bg-secondary border-border pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  onClick={() => setShowPassFields(!showPassFields)}
+                >
+                  {showPassFields ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <Label className="text-sm text-muted-foreground">Confirm New Password</Label>
+              <Input
+                type={showPassFields ? 'text' : 'password'}
+                value={confirmNewPassword}
+                onChange={e => setConfirmNewPassword(e.target.value)}
+                placeholder="••••••••"
+                className="bg-secondary border-border"
+              />
+            </div>
+            <Button
+              className="w-full"
+              disabled={changingPass}
+              onClick={async () => {
+                if (newPassword.length < 6) {
+                  toast.error('Password must be at least 6 characters');
+                  return;
+                }
+                if (newPassword !== confirmNewPassword) {
+                  toast.error('Passwords do not match');
+                  return;
+                }
+                setChangingPass(true);
+                const { error } = await supabase.auth.updateUser({ password: newPassword });
+                if (error) {
+                  toast.error(error.message);
+                } else {
+                  toast.success('Password updated successfully!');
+                  setChangePassOpen(false);
+                  setNewPassword('');
+                  setConfirmNewPassword('');
+                }
+                setChangingPass(false);
+              }}
+            >
+              {changingPass ? 'Updating...' : 'Update Password'}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
