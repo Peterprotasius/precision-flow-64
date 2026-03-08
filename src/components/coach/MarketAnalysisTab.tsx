@@ -203,6 +203,7 @@ export default function MarketAnalysisTab() {
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
