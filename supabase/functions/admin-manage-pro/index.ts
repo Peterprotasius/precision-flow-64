@@ -152,8 +152,8 @@ serve(async (req) => {
 
     throw new Error("Invalid action. Use: activate, deactivate, extend, or list");
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    console.error("admin-manage-pro error:", error);
+    return new Response(JSON.stringify({ error: "An internal error occurred." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
