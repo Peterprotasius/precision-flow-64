@@ -24,7 +24,7 @@ export default function ProTrialBanner() {
             <span className="text-[10px] font-bold uppercase tracking-wider bg-chart-4/20 text-chart-4 px-1.5 py-0.5 rounded">Limited Time</span>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            Unlock advanced insights, unlimited trades & full performance analytics.
+            Unlock AI Market Analysis, Prop Firm Tracker, session heatmaps, PDF reports & unlimited trades.
           </p>
           <Button
             size="sm"
