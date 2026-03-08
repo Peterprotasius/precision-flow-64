@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Crown, Copy, CheckCircle, Sparkles, Zap, BarChart3, Brain, Shield, ArrowLeft, Mail } from 'lucide-react';
+import PaymentMethodsSection from '@/components/payment/PaymentMethods';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
@@ -121,6 +122,12 @@ export default function Upgrade() {
           <li>Your account will be upgraded within 24 hours</li>
         </ol>
       </div>
+
+      {/* Namibian Payment Methods */}
+      <PaymentMethodsSection amount="NAD 165 / $9 USD" />
+
+      <div className="border-t border-border my-4" />
+      <p className="text-xs text-muted-foreground text-center mb-2">Or pay via bank transfer:</p>
 
       <Button
         className="w-full bg-chart-4 hover:bg-chart-4/90 text-background font-bold h-11"

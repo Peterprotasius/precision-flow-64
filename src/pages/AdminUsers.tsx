@@ -5,7 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Shield, Crown, ArrowLeft, Search, UserCheck, UserX, Clock, Loader2 } from 'lucide-react';
+import { Shield, Crown, ArrowLeft, Search, UserCheck, UserX, Clock, Loader2, CreditCard, DollarSign, MessageSquare, TrendingUp } from 'lucide-react';
+import PaymentConfirmationsAdmin from '@/components/admin/PaymentConfirmationsAdmin';
+import SubscriptionPricingAdmin from '@/components/admin/SubscriptionPricingAdmin';
+import SupportTicketsAdmin from '@/components/admin/SupportTicketsAdmin';
+import MarketAnalysisSettingsAdmin from '@/components/admin/MarketAnalysisSettingsAdmin';
 
 interface UserProfile {
   user_id: string;
@@ -25,6 +29,7 @@ export default function AdminUsers() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [adminTab, setAdminTab] = useState<'users' | 'payments' | 'pricing' | 'tickets' | 'market'>('users');
 
   // Check if current user is admin
   useEffect(() => {
@@ -106,18 +111,49 @@ export default function AdminUsers() {
 
       <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
         <Shield className="h-5 w-5 text-primary" />
-        Admin — User Management
+        Admin Panel
       </h1>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      {/* Admin tabs */}
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        {[
+          { key: 'users', label: 'Users', icon: <Shield className="h-3.5 w-3.5" /> },
+          { key: 'payments', label: 'Payments', icon: <CreditCard className="h-3.5 w-3.5" /> },
+          { key: 'pricing', label: 'Pricing', icon: <DollarSign className="h-3.5 w-3.5" /> },
+          { key: 'tickets', label: 'Support', icon: <MessageSquare className="h-3.5 w-3.5" /> },
+          { key: 'market', label: 'Market AI', icon: <TrendingUp className="h-3.5 w-3.5" /> },
+        ].map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setAdminTab(tab.key as any)}
+            className={`flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg border whitespace-nowrap transition-colors ${
+              adminTab === tab.key
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-secondary text-muted-foreground border-border'
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
       </div>
+
+      {adminTab === 'payments' && <PaymentConfirmationsAdmin />}
+      {adminTab === 'pricing' && <SubscriptionPricingAdmin />}
+      {adminTab === 'tickets' && <SupportTicketsAdmin />}
+      {adminTab === 'market' && <MarketAnalysisSettingsAdmin />}
+
+      {adminTab === 'users' && (
+        <>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name or email..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
 
       {loading ? (
         <div className="flex justify-center py-12">
@@ -192,6 +228,8 @@ export default function AdminUsers() {
             </div>
           ))}
         </div>
+      )}
+        </>
       )}
     </div>
   );
