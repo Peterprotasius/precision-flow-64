@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Crown, Copy, CheckCircle, Sparkles, Zap, BarChart3, Brain, Shield, ArrowLeft, Mail } from 'lucide-react';
+import { Crown, Copy, CheckCircle, Sparkles, Zap, BarChart3, Brain, Shield, ArrowLeft, Mail, Check, X } from 'lucide-react';
 import PaymentMethodsSection from '@/components/payment/PaymentMethods';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -81,6 +81,50 @@ export default function Upgrade() {
             <div key={i} className="flex items-center gap-2.5">
               <div className="text-chart-4">{f.icon}</div>
               <span className="text-sm text-foreground">{f.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Free vs Pro Comparison */}
+      <div className="glass-card p-4 space-y-3 animate-fade-in">
+        <h3 className="text-sm font-semibold text-foreground text-center">Free vs Pro</h3>
+        <div className="rounded-lg border border-border overflow-hidden">
+          {/* Header */}
+          <div className="grid grid-cols-3 bg-secondary/60 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">
+            <div className="p-2.5">Feature</div>
+            <div className="p-2.5 text-center">Free</div>
+            <div className="p-2.5 text-center text-chart-4">Pro</div>
+          </div>
+          {/* Rows */}
+          {[
+            { feature: 'Trade logging', free: '20 trades', pro: 'Unlimited' },
+            { feature: 'Dashboard metrics', free: true, pro: true },
+            { feature: 'AI Coach questions', free: '3/day', pro: 'Unlimited' },
+            { feature: 'AI Market Analysis', free: false, pro: true },
+            { feature: 'Equity curve', free: 'Basic', pro: 'Advanced' },
+            { feature: 'Session & TF heatmaps', free: false, pro: true },
+            { feature: 'Edge & Discipline scores', free: false, pro: true },
+            { feature: 'Psychology module', free: false, pro: true },
+            { feature: 'Prop Firm Tracker', free: false, pro: true },
+            { feature: 'Risk calculator', free: false, pro: true },
+            { feature: 'Broker auto-sync', free: false, pro: true },
+            { feature: 'PDF reports', free: false, pro: true },
+            { feature: 'Screenshot storage', free: false, pro: true },
+            { feature: 'XP & achievements', free: 'Basic', pro: 'Full' },
+            { feature: 'Priority support', free: false, pro: true },
+          ].map(({ feature, free, pro }, i) => (
+            <div key={i} className={`grid grid-cols-3 text-xs ${i % 2 === 0 ? 'bg-background' : 'bg-secondary/20'}`}>
+              <div className="p-2.5 text-foreground font-medium">{feature}</div>
+              <div className="p-2.5 flex items-center justify-center">
+                {free === true ? <Check className="h-3.5 w-3.5 text-success" /> 
+                 : free === false ? <X className="h-3.5 w-3.5 text-muted-foreground/40" /> 
+                 : <span className="text-muted-foreground">{free}</span>}
+              </div>
+              <div className="p-2.5 flex items-center justify-center">
+                {pro === true ? <Check className="h-3.5 w-3.5 text-chart-4" /> 
+                 : <span className="text-chart-4 font-semibold">{pro}</span>}
+              </div>
             </div>
           ))}
         </div>
