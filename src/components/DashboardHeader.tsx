@@ -21,10 +21,12 @@ export default function DashboardHeader() {
 
   return (
     <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Your trading overview</p>
-      </div>
+      <div className="flex items-center gap-3">
+        <img src={topLogo} alt="SMC Logo" className="h-10 w-10 rounded-lg object-contain" />
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Your trading overview</p>
+        </div>
       <div className="flex items-center gap-2">
         <button
           onClick={toggleTheme}
