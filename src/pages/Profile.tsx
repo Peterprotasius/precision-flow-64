@@ -218,6 +218,34 @@ export default function Profile() {
         </div>
       )}
 
+      {/* Appearance section */}
+      <div className="glass-card p-4 animate-fade-in">
+        <div className="flex items-center gap-2 mb-3">
+          <Palette className="h-5 w-5 text-primary" />
+          <h3 className="font-semibold text-foreground text-sm">Appearance</h3>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setTheme('dark')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg border transition-colors ${
+              theme === 'dark' ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+            }`}
+          >
+            <Moon className="h-4 w-4" />
+            <span className="text-sm">Dark</span>
+          </button>
+          <button
+            onClick={() => setTheme('light')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg border transition-colors ${
+              theme === 'light' ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted-foreground'
+            }`}
+          >
+            <Sun className="h-4 w-4" />
+            <span className="text-sm">Light</span>
+          </button>
+        </div>
+      </div>
+
       {/* Menu items */}
       <div className="glass-card divide-y divide-border animate-fade-in">
         {isAdmin && (
