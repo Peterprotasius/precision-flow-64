@@ -34,9 +34,15 @@ export default function ChartScreenshotUpload({
       const path = `${user.id}/${Date.now()}-${type}.${ext}`;
       const { error } = await supabase.storage.from('chart-screenshots').upload(path, file);
       if (error) throw error;
-      const { data: urlData } = supabase.storage.from('chart-screenshots').getPublicUrl(path);
-      if (type === 'before') onBeforeChange(urlData.publicUrl);
-      else onAfterChange(urlData.publicUrl);
+      // Use signed URL instead of public URL (bucket is now private)
+      const { data: signedData, error: signError } = await supabase.storage
+        .from('chart-screenshots')
+        .createSignedUrl(path, 60 * 60 * 24 * 365); // 1 year
+      if (signError) throw signError;
+      const signedUrl = signedData.signedUrl;
+      // Store the path for DB, but pass signed URL for immediate display
+      if (type === 'before') onBeforeChange(signedUrl);
+      else onAfterChange(signedUrl);
       toast.success(`${type === 'before' ? 'Before' : 'After'} chart uploaded!`);
     } catch (err: any) {
       toast.error(err.message || 'Upload failed');
