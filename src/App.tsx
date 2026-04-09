@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import AppLayout from "./components/AppLayout";
+import InstallPrompt from "./components/InstallPrompt";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const AddTrade = lazy(() => import("./pages/AddTrade"));
@@ -43,6 +44,7 @@ const App = () => (
         <TooltipProvider>
         <Toaster />
         <Sonner />
+        <InstallPrompt />
         <BrowserRouter>
           <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center"><div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}>
             <Routes>
